@@ -1,1 +1,38 @@
-# nextjs-admin-template
+# Next.js Admin Template
+
+Production-ready admin starter. Clone, configure env, ship.
+
+## Stack
+
+- **Next.js 16** — App Router, Turbopack, React 19
+- **Tailwind v4** + **shadcn** (radix-nova) — UI components
+- **SWR** — client-side data fetching
+- **Zod 4** — form validation
+- **sonner** — toasts
+- **Client-side auth** — localStorage tokens, no cookies or Server Actions
+
+## Quick start
+
+```bash
+git clone <repo>
+cd nextjs-admin-template
+cp .env.example .env.local
+# Edit .env.local
+pnpm install
+pnpm dev
+```
+
+## Configuration
+
+| Variable                            | Description                                                            |
+| ----------------------------------- | ---------------------------------------------------------------------- |
+| `NEXT_PUBLIC_API_PREFIX`            | URL prefix: `""` (prod) / `"stage-"` / `"local-"`                      |
+| `NEXT_PUBLIC_DOMAIN`                | TLD: `".com"` (prod) / `".net"` (stage/local)                          |
+| `NEXT_PUBLIC_ENVIRONMENT`           | `prod` \| `stage` \| `local` — badge shown in sidebar (hidden on prod) |
+| `NEXT_PUBLIC_APP_NAME`              | Displayed in sidebar and page titles                                   |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID`      | Google OAuth client ID — required for Google sign-in                   |
+| `NEXT_PUBLIC_TENMS_SOURCE_PLATFORM` | Sent as `X-TENMS-SOURCE-PLATFORM` header on every request              |
+
+## Adding features
+
+See `CLAUDE.md` for the full architecture guide and step-by-step instructions.
