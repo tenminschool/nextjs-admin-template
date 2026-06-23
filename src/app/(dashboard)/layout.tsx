@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { DashboardShell } from '@/components/layout/dashboard-shell';
 import { Spinner } from '@/components/ui/spinner';
-import { getAccessToken } from '@/lib/auth/storage';
+import { useAuth } from '@/hooks/use-auth';
 import { LOGIN_PATH } from '@/lib/auth/config';
 
 export default function DashboardLayout({
@@ -13,18 +13,15 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const [hasToken] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return Boolean(getAccessToken());
-  });
+  const { user, hydrated } = useAuth();
 
   useEffect(() => {
-    if (!hasToken) {
+    if (hydrated && !user) {
       router.replace(LOGIN_PATH);
     }
-  }, [hasToken, router]);
+  }, [hydrated, user, router]);
 
-  if (!hasToken) {
+  if (!hydrated || !user) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Spinner className="size-6 text-muted-foreground" />
