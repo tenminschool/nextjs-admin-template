@@ -3,7 +3,7 @@
 import { Menu, PanelLeft } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { navItems } from '@/lib/nav';
-import { Button } from '@/components/ui/button';
+import { Button } from '@tenminuteschool/design-system';
 
 interface HeaderProps {
   onToggleSidebar: () => void;

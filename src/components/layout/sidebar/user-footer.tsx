@@ -2,15 +2,15 @@
 
 import { ChevronsUpDown, LogOut } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Spinner } from '@/components/ui/spinner';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  LoadingSpinner,
+  Skeleton,
+} from '@tenminuteschool/design-system';
 import { cn } from '@/lib/utils';
 
 function LogoutOverlay() {
@@ -21,7 +21,7 @@ function LogoutOverlay() {
       className="fixed inset-0 z-[100] flex items-center justify-center bg-background/85 backdrop-blur-md animate-in fade-in duration-200"
     >
       <div className="flex items-center gap-3 rounded-xl border bg-card px-5 py-4 shadow-lg animate-in zoom-in-95 duration-200">
-        <Spinner className="size-4 text-muted-foreground" />
+        <LoadingSpinner size="sm" className="text-muted-foreground" />
         <span className="text-sm font-medium">Signing you out…</span>
       </div>
     </div>

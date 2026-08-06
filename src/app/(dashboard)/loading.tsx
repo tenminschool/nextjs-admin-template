@@ -1,4 +1,4 @@
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '@tenminuteschool/design-system';
 
 export default function DashboardLoading() {
   return (

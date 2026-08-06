@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { DashboardShell } from '@/components/layout/dashboard-shell';
-import { Spinner } from '@/components/ui/spinner';
+import { LoadingSpinner } from '@tenminuteschool/design-system';
 import { useAuth } from '@/hooks/use-auth';
 import { LOGIN_PATH } from '@/lib/auth';
 
@@ -24,7 +24,7 @@ export default function DashboardLayout({
   if (!hydrated || !user) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Spinner className="size-6 text-muted-foreground" />
+        <LoadingSpinner size="md" className="text-muted-foreground" />
       </div>
     );
   }

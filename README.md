@@ -5,7 +5,7 @@ Production-ready admin starter. Clone, configure env, ship.
 ## Stack
 
 - **Next.js 16** — App Router, Turbopack, React 19
-- **Tailwind v4** + **shadcn** (radix-nova) — UI components
+- **Tailwind v4** + **`@tenminuteschool/design-system`** — UI components
 - **SWR** — client-side data fetching
 - **Zod 4** — form validation
 - **sonner** — toasts

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { Button } from '@tenminuteschool/design-system';
 
 export default function NotFound() {
   return (

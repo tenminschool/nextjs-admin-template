@@ -11,7 +11,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from '@tenminuteschool/design-system';
 import { WorkspaceHeader } from './sidebar/workspace-header';
 import { UserFooter } from './sidebar/user-footer';
 import { APP_NAME } from '@/constants';
