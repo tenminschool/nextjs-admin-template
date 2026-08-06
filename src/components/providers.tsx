@@ -1,18 +1,22 @@
 'use client';
 
 import { SWRConfig } from 'swr';
+import { TenMSAuthProvider } from '@tenminuteschool/auth-admin-react';
 import { Toaster } from '@/components/ui/sonner';
+import { auth } from '@/lib/auth';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <SWRConfig
-      value={{
-        revalidateOnFocus: true,
-        shouldRetryOnError: false,
-      }}
-    >
-      {children}
-      <Toaster richColors closeButton />
-    </SWRConfig>
+    <TenMSAuthProvider auth={auth}>
+      <SWRConfig
+        value={{
+          revalidateOnFocus: true,
+          shouldRetryOnError: false,
+        }}
+      >
+        {children}
+        <Toaster richColors closeButton />
+      </SWRConfig>
+    </TenMSAuthProvider>
   );
 }

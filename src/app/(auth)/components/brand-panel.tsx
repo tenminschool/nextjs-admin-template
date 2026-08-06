@@ -45,7 +45,7 @@ export function BrandPanel() {
 
       {/* Footer meta */}
       <div className="relative z-10 flex items-center justify-between text-xs text-zinc-500">
-        <span>© {new Date().getFullYear()} Your Company</span>
+        <span>© {new Date().getFullYear()} · 10 Minute School</span>
         <span className="font-mono">v1.0.0</span>
       </div>
     </aside>

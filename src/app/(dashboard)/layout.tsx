@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { DashboardShell } from '@/components/layout/dashboard-shell';
 import { Spinner } from '@/components/ui/spinner';
 import { useAuth } from '@/hooks/use-auth';
-import { LOGIN_PATH } from '@/lib/auth/config';
+import { LOGIN_PATH } from '@/lib/auth';
 
 export default function DashboardLayout({
   children,

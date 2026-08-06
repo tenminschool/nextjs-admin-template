@@ -2,13 +2,7 @@
 
 import { Logo } from '@/components/logo';
 import { cn } from '@/lib/utils';
-import { APP_NAME, ENV } from '@/constants';
-
-const ENV_TONE: Record<string, string> = {
-  stage:
-    'bg-amber-500/12 text-amber-700 dark:bg-amber-400/15 dark:text-amber-300',
-  local: 'bg-sky-500/12 text-sky-700 dark:bg-sky-400/15 dark:text-sky-300',
-};
+import { APP_NAME } from '@/constants';
 
 export function WorkspaceHeader({ isCollapsed }: { isCollapsed: boolean }) {
   return (
@@ -28,16 +22,6 @@ export function WorkspaceHeader({ isCollapsed }: { isCollapsed: boolean }) {
               <span className="truncate text-sm font-semibold tracking-tight text-sidebar-foreground">
                 {APP_NAME}
               </span>
-              {ENV !== 'prod' && (
-                <span
-                  className={cn(
-                    'shrink-0 rounded px-1.5 text-[9px] font-semibold uppercase leading-[14px] tracking-wider',
-                    ENV_TONE[ENV] ?? ENV_TONE.stage,
-                  )}
-                >
-                  {ENV}
-                </span>
-              )}
             </div>
             <p className="truncate text-[11px] text-sidebar-foreground/55">
               Internal workspace

@@ -9,7 +9,7 @@ Production-ready admin starter. Clone, configure env, ship.
 - **SWR** — client-side data fetching
 - **Zod 4** — form validation
 - **sonner** — toasts
-- **Client-side auth** — localStorage tokens, no cookies or Server Actions
+- **Auth** — "Login with 10MS Admin" via `@tenminuteschool/auth-admin-react`, localStorage session, no cookies or Server Actions
 
 ## Quick start
 
@@ -30,7 +30,7 @@ pnpm dev
 | `NEXT_PUBLIC_DOMAIN`                | TLD: `".com"` (prod) / `".net"` (stage/local)                          |
 | `NEXT_PUBLIC_ENVIRONMENT`           | `prod` \| `stage` \| `local` — badge shown in sidebar (hidden on prod) |
 | `NEXT_PUBLIC_APP_NAME`              | Displayed in sidebar and page titles                                   |
-| `NEXT_PUBLIC_GOOGLE_CLIENT_ID`      | Google OAuth client ID — required for Google sign-in                   |
+| `NEXT_PUBLIC_TENMS_CLIENT_ID`       | Client ID registered with "Login with 10MS Admin"                      |
 | `NEXT_PUBLIC_TENMS_SOURCE_PLATFORM` | Sent as `X-TENMS-SOURCE-PLATFORM` header on every request              |
 
 ## Adding features

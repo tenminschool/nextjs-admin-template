@@ -1,37 +1,19 @@
 'use client';
 
-import { useState, useSyncExternalStore } from 'react';
-import { logoutRemote } from '@/lib/auth/api';
-import {
-  clearStoredUser,
-  getStoredUser,
-  subscribeStoredUser,
-  getAccessToken,
-} from '@/lib/auth/storage';
-import { LOGIN_PATH } from '@/lib/auth/config';
-
-const noopSubscribe = () => () => {};
+import { useCallback, useState } from 'react';
+import { useTenMSAuth } from '@tenminuteschool/auth-admin-react';
+import { LOGIN_PATH } from '@/lib/auth';
 
 export function useAuth() {
-  const user = useSyncExternalStore(
-    subscribeStoredUser,
-    getStoredUser,
-    () => null,
-  );
-  const hydrated = useSyncExternalStore(
-    noopSubscribe,
-    () => true,
-    () => false,
-  );
+  const { user, loading, auth, refresh } = useTenMSAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     setIsLoggingOut(true);
-    const token = getAccessToken();
-    clearStoredUser();
-    if (token) await logoutRemote(token).catch(() => {});
+    await auth.logout().catch(() => {});
+    refresh();
     window.location.href = LOGIN_PATH;
-  };
+  }, [auth, refresh]);
 
-  return { user, hydrated, logout, isLoggingOut };
+  return { user, hydrated: !loading, logout, isLoggingOut };
 }

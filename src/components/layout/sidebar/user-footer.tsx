@@ -101,8 +101,8 @@ export function UserFooter({ isCollapsed }: { isCollapsed?: boolean }) {
   if (!hydrated) return <FooterSkeleton isCollapsed={isCollapsed} />;
 
   const displayName = user?.name ?? '';
-  const displayEmail = user?.username ?? '';
-  const initials = user ? getInitials(user.name) : '··';
+  const displayEmail = user?.email ?? '';
+  const initials = user?.name ? getInitials(user.name) : '··';
 
   return (
     <div className="border-t border-sidebar-border/70 p-2">

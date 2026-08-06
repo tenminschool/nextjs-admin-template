@@ -4,15 +4,15 @@ Production-ready admin starter. Next.js 16, App Router, TypeScript, Tailwind v4,
 
 ## Stack
 
-| Layer     | Choice                                             |
-| --------- | -------------------------------------------------- |
-| Framework | Next.js 16 (App Router, Turbopack)                 |
-| UI        | React 19, shadcn (radix-nova), Tailwind v4         |
-| Font      | Geist Sans / Mono                                  |
-| Auth      | Client-side only — localStorage, no cookies        |
-| Forms     | Zod 4                                              |
-| Data      | SWR + `apiRequest()` for authenticated calls       |
-| Toasts    | sonner                                             |
+| Layer     | Choice                                                         |
+| --------- | -------------------------------------------------------------- |
+| Framework | Next.js 16 (App Router, Turbopack)                             |
+| UI        | React 19, shadcn (radix-nova), Tailwind v4                     |
+| Font      | Geist Sans / Mono                                              |
+| Auth      | `@tenminuteschool/auth-admin-react` — localStorage, no cookies |
+| Forms     | Zod 4                                                          |
+| Data      | SWR + `apiRequest()` for authenticated calls                   |
+| Toasts    | sonner                                                         |
 
 ## Quick start
 
@@ -33,20 +33,19 @@ NEXT_PUBLIC_API_PREFIX=local-
 NEXT_PUBLIC_ENVIRONMENT=local
 NEXT_PUBLIC_DOMAIN=.net
 
-NEXT_PUBLIC_APP_NAME=Admin
-NEXT_PUBLIC_GOOGLE_CLIENT_ID=         # required for Google sign-in button
+NEXT_PUBLIC_APP_NAME=10MS APP
+NEXT_PUBLIC_TENMS_CLIENT_ID=          # required — client ID for "Login with 10MS Admin"
 NEXT_PUBLIC_TENMS_SOURCE_PLATFORM=admin
 
-NEXT_PUBLIC_SITE_URL_prod=https://admin.10minuteschool.com
-NEXT_PUBLIC_SITE_URL_stage=https://admin.10minuteschool.net
-NEXT_PUBLIC_SITE_URL_local=https://local.10minuteschool.net
 ```
 
-Backend URL constructed in `src/lib/api.ts`:
+Backend base URL constructed in `src/lib/api.ts` (used by feature services added via `API_SERVICES`/`API_ROUTES` — see "API layer" below):
 
 ```
-https://{NEXT_PUBLIC_API_PREFIX}api.10minuteschool{NEXT_PUBLIC_DOMAIN}/auth/v1
+https://{NEXT_PUBLIC_API_PREFIX}api.10minuteschool{NEXT_PUBLIC_DOMAIN}
 ```
+
+Auth itself does not use this base URL — `@tenminuteschool/auth-admin-react` talks to its own fixed OAuth backend (see "Auth architecture" below).
 
 ## Folder structure
 
@@ -57,7 +56,7 @@ src/
 │   │   ├── components/brand-panel.tsx  # Left-panel split-screen branding
 │   │   ├── layout.tsx                  # Split-screen auth shell
 │   │   └── login/
-│   │       ├── components/             # login-form.tsx, google-sign-in.tsx
+│   │       ├── components/login-with-tenms.tsx  # LoginButton + useTenMSAuth
 │   │       └── page.tsx
 │   ├── (dashboard)/                    # Protected routes
 │   │   ├── dashboard/page.tsx
@@ -81,12 +80,12 @@ src/
 │   └── logo.tsx
 │
 ├── hooks/
-│   └── use-auth.ts                     # Client session (localStorage user)
+│   └── use-auth.ts                     # Thin wrapper over useTenMSAuth()
 │
 ├── lib/
 │   ├── api.ts                          # API_SERVICES, API_ROUTES, apiUrl()
-│   ├── api/client.ts                   # apiRequest() — Bearer from localStorage
-│   ├── auth/                           # api, storage, config, types
+│   ├── api/client.ts                   # apiRequest() — Bearer via auth.getAccessToken()
+│   ├── auth.ts                         # TenMSAuth instance, CLIENT_ID, LOGIN_PATH
 │   ├── nav.ts                          # Sidebar nav items (single source of truth)
 │   └── utils.ts                        # cn()
 │
@@ -99,34 +98,34 @@ src/
 - **features/** — All domain logic lives here. Each feature owns: UI components, API calls (SWR hooks), types, schemas.
 - **components/** — Generic, domain-agnostic UI. `layout/` for shell; `ui/` for shadcn primitives.
 - **hooks/** — Client-side React hooks.
-- **lib/** — Pure utilities and infrastructure (no React). `auth/` for auth plumbing; `api/` for HTTP client.
+- **lib/** — Pure utilities and infrastructure (no React). `auth.ts` for the auth SDK instance; `api/` for HTTP client.
 - **constants/** — Compile-time values read from `process.env`.
 
 ## Auth architecture
 
-Client-side only — no Server Actions, no httpOnly cookies.
+"Login with 10MS Admin" via `@tenminuteschool/auth-admin-react` — OAuth 2.0 + PKCE against 10 Minute School's own auth backend. Client-side only — no Server Actions, no httpOnly cookies.
 
-| Layer        | File                         | Behavior                                                              |
-| ------------ | ---------------------------- | --------------------------------------------------------------------- |
-| Route guard  | `(dashboard)/layout.tsx`     | `useEffect` checks localStorage token; redirects `/login` if missing |
-| API calls    | `lib/api/client.ts`          | Bearer from localStorage; 401 → clears storage, redirects `/login`   |
+| Layer        | File                       | Behavior                                                                       |
+| ------------ | -------------------------- | ------------------------------------------------------------------------------ |
+| SDK instance | `lib/auth.ts`              | `new TenMSAuth({ clientId, storage: 'localStorage' })` — singleton             |
+| Session      | `components/providers.tsx` | `TenMSAuthProvider` wraps the app once; handles cross-app token handoff        |
+| Route guard  | `(dashboard)/layout.tsx`   | `useAuth()` (`hydrated`/`user`); redirects to `/login` if missing              |
+| API calls    | `lib/api/client.ts`        | Bearer from `auth.getAccessToken()` (auto-refreshes); 401 → redirects `/login` |
 
-### Token storage
+### Session provider
 
-- **localStorage only** — Bearer token + user profile, read by `useAuth()` via `useSyncExternalStore`
+`TenMSAuthProvider` needs `"use client"`, so it's mounted inside `components/providers.tsx` (already a client component) rather than directly in the Server Component root layout. Read session state anywhere in the tree with `useTenMSAuth()` — or `useAuth()` in `hooks/use-auth.ts`, a thin wrapper kept for a stable `{ user, hydrated, logout, isLoggingOut }` shape across the app.
+
+**Never**: call `auth.handleTokenHandoff()` yourself (the provider already calls it once, globally, on mount — a second call races it), or read session state via `auth.isLoggedIn()`/`auth.getUser()` inside a component instead of `useTenMSAuth()`/`useAuth()`.
 
 ### Login flow
 
-1. User submits form → `loginWithPassword()` called directly from client
-2. API responds with tokens + user
-3. Client: `setStoredUser()` + `setAccessToken()` → localStorage
-4. `router.replace('/dashboard')`
+1. `LoginWithTenMS` (`app/(auth)/login/components/login-with-tenms.tsx`) renders the SDK's `<LoginButton clientId={CLIENT_ID} />`
+2. `onSuccess`: `await auth.handleLoginSuccess(response)` → `refresh()` → `router.replace('/dashboard')`
 
 ### Logout flow
 
-1. `useAuth().logout()` clears localStorage immediately
-2. Calls `logoutRemote()` (best-effort, fire-and-forget)
-3. `window.location.href = '/login'`
+1. `useAuth().logout()`: `await auth.logout()` (revokes token when this app owns the session) → `refresh()` → `window.location.href = '/login'`
 
 ## API layer
 
@@ -134,7 +133,7 @@ Client-side only — no Server Actions, no httpOnly cookies.
 // Add a new service in src/lib/api.ts:
 export const API_SERVICES = {
   auth: `${API_BASE}/auth/v1`,
-  users: `${API_BASE}/users/v1`,  // add more services
+  users: `${API_BASE}/users/v1`, // add more services
 } as const;
 
 export const API_ROUTES = {

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { X } from 'lucide-react';
 import { navItems } from '@/lib/nav';
 import { cn } from '@/lib/utils';
@@ -127,6 +127,10 @@ export function Sidebar({
   onMobileClose,
 }: SidebarProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isEmbedded =
+    typeof window !== 'undefined' && window.self !== window.top;
+  const hideUserFooter = searchParams.get('source') === 'hq' || isEmbedded;
 
   return (
     <>
@@ -140,7 +144,7 @@ export function Sidebar({
       >
         <WorkspaceHeader isCollapsed={isCollapsed} />
         <NavList isCollapsed={isCollapsed} pathname={pathname} />
-        <UserFooter isCollapsed={isCollapsed} />
+        {!hideUserFooter && <UserFooter isCollapsed={isCollapsed} />}
       </aside>
 
       {/* Mobile drawer */}
@@ -172,7 +176,7 @@ export function Sidebar({
           pathname={pathname}
           onItemClick={onMobileClose}
         />
-        <UserFooter />
+        {!hideUserFooter && <UserFooter />}
       </aside>
     </>
   );

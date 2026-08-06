@@ -1,8 +1,7 @@
 'use client';
 
 import { SOURCE_PLATFORM } from '@/lib/api';
-import { clearStoredUser, getAccessToken } from '@/lib/auth/storage';
-import { LOGIN_PATH } from '@/lib/auth/config';
+import { auth, LOGIN_PATH } from '@/lib/auth';
 
 export class ApiError extends Error {
   constructor(
@@ -15,7 +14,6 @@ export class ApiError extends Error {
 }
 
 function redirectToLogin() {
-  clearStoredUser();
   window.location.href = LOGIN_PATH;
 }
 
@@ -23,7 +21,7 @@ export async function apiRequest<T>(
   url: string,
   init: RequestInit = {},
 ): Promise<T> {
-  const accessToken = getAccessToken();
+  const accessToken = await auth.getAccessToken();
   if (!accessToken) {
     redirectToLogin();
     throw new ApiError('Unauthorized', 401);

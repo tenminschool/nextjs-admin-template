@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
-import { Separator } from '@/components/ui/separator';
 import { Logo } from '@/components/logo';
-import { LoginForm } from './components/login-form';
-import { GoogleSignIn } from './components/google-sign-in';
+import { LoginWithTenMS } from './components/login-with-tenms';
 import { APP_NAME } from '@/constants';
 
 export const metadata: Metadata = {
@@ -24,20 +22,11 @@ export default function LoginPage() {
           Sign in to your account
         </h1>
         <p className="text-sm text-muted-foreground">
-          Welcome back. Enter your credentials to continue.
+          Welcome back. Continue with your 10 Minute School admin account.
         </p>
       </div>
 
-      <LoginForm />
-
-      <div className="flex items-center gap-3">
-        <Separator className="flex-1" />
-        <span className="text-xs uppercase tracking-wider text-muted-foreground">
-          or
-        </span>
-        <Separator className="flex-1" />
-      </div>
-      <GoogleSignIn />
+      <LoginWithTenMS />
     </div>
   );
 }

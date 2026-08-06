@@ -13,7 +13,7 @@ export default function AuthLayout({
           <div className="w-full max-w-sm">{children}</div>
         </div>
         <p className="text-center text-xs text-muted-foreground lg:hidden">
-          © {new Date().getFullYear()} Your Company
+          © {new Date().getFullYear()} · 10 Minute School
         </p>
       </main>
     </div>
