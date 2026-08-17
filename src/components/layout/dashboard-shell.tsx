@@ -2,42 +2,41 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { AppSidebar } from '@/components/layout/sidebar/app-sidebar';
+import { SidebarProvider } from '@/components/layout/sidebar/sidebar-primitives';
+import { FullBleedContext } from './full-bleed-context';
 import { Header } from './header';
-import { Sidebar } from './sidebar';
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [fullBleed, setFullBleed] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <div
-        className={cn(
-          'fixed inset-0 z-20 bg-black/40 backdrop-blur-sm transition-opacity duration-300 md:hidden',
-          isMobileOpen
-            ? 'opacity-100 pointer-events-auto'
-            : 'opacity-0 pointer-events-none',
-        )}
-        onClick={() => setIsMobileOpen(false)}
-      />
-
-      <Sidebar
-        isCollapsed={isCollapsed}
-        isMobileOpen={isMobileOpen}
-        onMobileClose={() => setIsMobileOpen(false)}
-      />
-
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <Header
-          onToggleSidebar={() => setIsCollapsed((v) => !v)}
-          onMobileMenuClick={() => setIsMobileOpen(true)}
-        />
-        <main className="flex-1 overflow-auto">
-          <div className="mx-auto w-full max-w-screen-2xl px-6 py-8">
-            {children}
+    <SidebarProvider className="h-svh flex-col overflow-hidden">
+      <Header />
+      <div className="flex min-h-0 flex-1">
+        <AppSidebar />
+        <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
+          <div className="mr-4 mb-4 ml-2 flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-background shadow-sm">
+            <div
+              className={cn(
+                'scrollbar-hide flex min-h-0 flex-1 flex-col',
+                fullBleed ? 'overflow-hidden' : 'overflow-y-auto',
+              )}
+            >
+              <div
+                className={cn(
+                  'flex min-h-0 w-full min-w-0 flex-1 flex-col',
+                  fullBleed ? 'h-full' : 'p-6',
+                )}
+              >
+                <FullBleedContext.Provider value={setFullBleed}>
+                  {children}
+                </FullBleedContext.Provider>
+              </div>
+            </div>
           </div>
         </main>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

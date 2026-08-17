@@ -24,18 +24,22 @@ pnpm dev
 
 ## Configuration
 
-| Variable                             | Description                                                    |
-| ------------------------------------ | ---------------------------------------------------------------- |
-| `NEXT_PUBLIC_API_PREFIX`             | URL prefix: `""` (prod) / `"stage-"` / `"local-"`                |
-| `NEXT_PUBLIC_DOMAIN`                 | TLD: `".com"` (prod) / `".net"` (stage/local)                    |
-| `NEXT_PUBLIC_ENVIRONMENT`            | `prod` \| `stage` \| `local`                                     |
-| `NEXT_PUBLIC_APP_NAME`               | Displayed in sidebar and page titles (defaults to `10MS APP`)   |
-| `NEXT_PUBLIC_TENMS_CLIENT_ID`        | Client ID registered with "Login with 10MS Admin"                |
-| `NEXT_PUBLIC_TENMS_SOURCE_PLATFORM`  | Sent as `X-TENMS-SOURCE-PLATFORM` header on every request        |
+| Variable                            | Description                                                      |
+| ----------------------------------- | ---------------------------------------------------------------- |
+| `NEXT_PUBLIC_API_PREFIX`            | URL prefix: `""` (prod) / `"stage-"` / `"local-"`                |
+| `NEXT_PUBLIC_DOMAIN`                | TLD: `".com"` (prod) / `".net"` (stage/local)                    |
+| `NEXT_PUBLIC_ENVIRONMENT`           | `prod` \| `stage` \| `local`                                     |
+| `NEXT_PUBLIC_APP_NAME`              | Displayed in the navbar and page titles (defaults to `10MS APP`) |
+| `NEXT_PUBLIC_TENMS_CLIENT_ID`       | Client ID registered with "Login with 10MS Admin"                |
+| `NEXT_PUBLIC_TENMS_SOURCE_PLATFORM` | Sent as `X-TENMS-SOURCE-PLATFORM` header on every request        |
+
+## Layout
+
+Top navbar + a floating left rail (three modes: pinned open, icon-only, or peek-on-hover — persisted per browser; `⌘/Ctrl + B` toggles). Below `lg` the rail becomes a drawer. See `CLAUDE.md` → "Layout shell".
 
 ## Embedding
 
-The sidebar's user info/logout section auto-hides when the app is loaded inside an iframe, or when the URL has `?source=hq`.
+Both account menus (navbar and sidebar footer) auto-hide when the app is loaded inside an iframe, or when the URL has `?source=hq` — the host shell supplies its own.
 
 ## Adding features
 

@@ -1,47 +1,46 @@
 'use client';
 
-import { Menu, PanelLeft } from 'lucide-react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { navItems } from '@/lib/nav';
-import { Button } from '@tenminuteschool/design-system';
+import { getNavTitle } from '@/lib/nav';
+import { Logo } from '@/components/logo';
+import { HeaderUser } from '@/components/layout/header-user';
+import { SidebarTrigger } from '@/components/layout/sidebar/sidebar-primitives';
+import { useIsEmbedded } from '@/hooks/use-embedded';
+import { APP_NAME } from '@/constants';
 
-interface HeaderProps {
-  onToggleSidebar: () => void;
-  onMobileMenuClick: () => void;
-}
-
-export function Header({ onToggleSidebar, onMobileMenuClick }: HeaderProps) {
+export function Header() {
   const pathname = usePathname();
-  const title =
-    navItems.find(
-      (item) => pathname === item.href || pathname.startsWith(`${item.href}/`),
-    )?.label ?? 'Dashboard';
+  const title = getNavTitle(pathname);
+  const isEmbedded = useIsEmbedded();
 
   return (
-    <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center border-b border-border/60 bg-background/70 px-4 backdrop-blur-xl backdrop-saturate-150">
-      <div className="flex items-center gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 md:hidden"
-          onClick={onMobileMenuClick}
-          aria-label="Open menu"
-        >
-          <Menu size={16} />
-        </Button>
+    <header className="sticky top-0 z-50 flex h-14 w-full shrink-0 items-center gap-3 bg-transparent px-4">
+      {/* Desktop keeps the rail on screen; only the mobile Sheet needs a trigger. */}
+      <SidebarTrigger className="-ml-1 lg:hidden" />
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="hidden h-8 w-8 text-muted-foreground hover:text-foreground md:flex"
-          onClick={onToggleSidebar}
-          aria-label="Toggle sidebar"
-        >
-          <PanelLeft size={16} />
-        </Button>
+      <Link href="/dashboard" className="flex shrink-0 items-center gap-2.5">
+        <Logo className="h-8 w-8" iconSize={15} />
+        <span className="hidden text-sm font-semibold tracking-tight sm:inline">
+          {APP_NAME}
+        </span>
+      </Link>
 
-        <span className="text-sm font-semibold tracking-tight">{title}</span>
-      </div>
+      <div
+        aria-hidden
+        className="hidden h-5 w-px shrink-0 bg-border sm:block"
+      />
+
+      <span className="truncate text-sm font-semibold tracking-tight text-muted-foreground">
+        {title}
+      </span>
+
+      {/* Embedded in a host shell (10MS HQ), the host owns the account menu. */}
+      {!isEmbedded && (
+        <div className="ml-auto flex shrink-0 items-center">
+          <HeaderUser />
+        </div>
+      )}
     </header>
   );
 }

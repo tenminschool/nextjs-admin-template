@@ -73,14 +73,24 @@ src/
 │   # Add: features/users/, features/products/, etc.
 │
 ├── components/
-│   ├── layout/                         # DashboardShell, Sidebar, Header
-│   │   └── sidebar/                    # WorkspaceHeader, UserFooter
-│   ├── ui/                             # shadcn — add via CLI, do not hand-edit
+│   ├── layout/
+│   │   ├── dashboard-shell.tsx         # Header + rail + content card
+│   │   ├── header.tsx                  # Top navbar (logo, env badge, page title, user)
+│   │   ├── header-user.tsx             # Navbar account dropdown
+│   │   ├── dark-rail-theme.ts          # RAIL_SURFACE_CLASS → .rail-surface
+│   │   ├── full-bleed-context.tsx      # useFullBleedPage() — page owns the card
+│   │   └── sidebar/
+│   │       ├── sidebar-primitives.tsx  # shadcn sidebar fork (modes + hover-peek)
+│   │       ├── app-sidebar.tsx         # Composed rail
+│   │       ├── nav-main.tsx            # Nav groups, collapsibles, icon flyouts
+│   │       └── sidebar-settings.tsx    # Rail footer: sidebar mode picker
 │   ├── providers.tsx
 │   └── logo.tsx
 │
 ├── hooks/
-│   └── use-auth.ts                     # Thin wrapper over useTenMSAuth()
+│   ├── use-auth.ts                     # Thin wrapper over useTenMSAuth()
+│   ├── use-embedded.ts                 # In an HQ iframe / ?source=hq
+│   └── use-large.ts                    # lg breakpoint — desktop rail vs mobile sheet
 │
 ├── lib/
 │   ├── api.ts                          # API_SERVICES, API_ROUTES, apiUrl()
@@ -96,7 +106,7 @@ src/
 
 - **app/** — Next.js routing only. Pages are thin — delegate to `features/`.
 - **features/** — All domain logic lives here. Each feature owns: UI components, API calls (SWR hooks), types, schemas.
-- **components/** — Generic, domain-agnostic UI. `layout/` for shell; `ui/` for shadcn primitives.
+- **components/** — Generic, domain-agnostic UI. `layout/` for the app shell; everything else comes from `@tenminuteschool/design-system`.
 - **hooks/** — Client-side React hooks.
 - **lib/** — Pure utilities and infrastructure (no React). `auth.ts` for the auth SDK instance; `api/` for HTTP client.
 - **constants/** — Compile-time values read from `process.env`.
@@ -155,6 +165,41 @@ export function useUsers() {
 }
 ```
 
+## Layout shell
+
+Ported from **10MS HQ** — top navbar plus a floating left rail, with the page in an inset card.
+
+```
+DashboardShell            h-svh, flex-col, overflow-hidden
+├── Header                sticky h-14: mobile SidebarTrigger, logo + APP_NAME + env badge, page title, HeaderUser
+└── row (flex-1)
+    ├── AppSidebar        floating rail, fixed under the header (top-14)
+    └── content card      rounded-xl border, scrolls inside itself
+```
+
+### Sidebar modes
+
+`SidebarProvider` persists one of three modes in `localStorage` (`sidebar_mode`), default `hover`:
+
+| Mode        | Behavior                                                                |
+| ----------- | ----------------------------------------------------------------------- |
+| `expanded`  | Pinned open — reserves real layout width                                |
+| `collapsed` | Icon rail, no peek; groups open as hover flyouts, items get tooltips    |
+| `hover`     | Icon rail that peeks open on hover (debounced) and overlays the content |
+
+- `⌘/Ctrl + B` (or the navbar trigger) flips `expanded` ⇄ `hover`; `collapsed` is chosen from the rail's user menu → **Sidebar**.
+- Below `lg` the rail is replaced by a Sheet drawer, opened by the navbar trigger.
+- An open dropdown/popover inside the rail locks the peek open via `setPeekLocked` — pass it to `onOpenChange` for anything anchored in the rail.
+- The rail is near-black in light mode via `.rail-surface` (`globals.css`); in dark mode it defers to the app's `--sidebar` tokens.
+
+`sidebar-primitives.tsx` is a **fork** of the shadcn sidebar (modes instead of a boolean `open`, hover-peek, header offset) — edit it directly; do not re-add it via the shadcn CLI. Leaf primitives come from `@tenminuteschool/design-system`.
+
+### Nav, titles, full-bleed pages
+
+- `lib/nav.ts` — `NAV` (categories → items → optional `items` children) is the single source of truth; `getNavTitle(pathname)` feeds the header title.
+- `useFullBleedPage()` (`layout/full-bleed-context.tsx`) drops the card's padding and inner scroll so a page can own them (tables, iframes).
+- `useIsEmbedded()` hides both account menus when the app runs inside 10MS HQ (`?source=hq` or an iframe) — the host provides its own.
+
 ## Adding a new feature
 
 1. Create `src/features/<name>/` with:
@@ -164,15 +209,11 @@ export function useUsers() {
    - `components/` — Feature UI
    - `<name>.tsx` — Main page component
 2. Add a route: `src/app/(dashboard)/<name>/page.tsx` → `import { NamePage } from '@/features/<name>/<name>'`
-3. Add nav item in `src/lib/nav.ts`
+3. Add nav item to `NAV` in `src/lib/nav.ts`
 
-## shadcn components
+## UI components
 
-Add via CLI (do not hand-edit `src/components/ui/`):
-
-```bash
-pnpm dlx shadcn@latest add <component>
-```
+Import from `@tenminuteschool/design-system` (Button, Input, Dialog, DataTable, …). The only hand-maintained UI is the layout shell in `src/components/layout/` — notably the sidebar fork described above.
 
 ## Code conventions
 
