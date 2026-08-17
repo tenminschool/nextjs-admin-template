@@ -39,7 +39,7 @@ Top navbar + a floating left rail (three modes: pinned open, icon-only, or peek-
 
 ## Embedding
 
-Both account menus (navbar and sidebar footer) auto-hide when the app is loaded inside an iframe, or when the URL has `?source=hq` — the host shell supplies its own.
+The navbar account menu auto-hides when the app is loaded inside an iframe, or when the URL has `?source=hq` — the host shell supplies its own.
 
 ## Adding features
 

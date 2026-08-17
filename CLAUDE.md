@@ -171,7 +171,7 @@ Ported from **10MS HQ** — top navbar plus a floating left rail, with the page 
 
 ```
 DashboardShell            h-svh, flex-col, overflow-hidden
-├── Header                sticky h-14: mobile SidebarTrigger, logo + APP_NAME + env badge, page title, HeaderUser
+├── Header                sticky h-14: mobile SidebarTrigger, logo + APP_NAME, page title, HeaderUser
 └── row (flex-1)
     ├── AppSidebar        floating rail, fixed under the header (top-14)
     └── content card      rounded-xl border, scrolls inside itself
@@ -187,7 +187,9 @@ DashboardShell            h-svh, flex-col, overflow-hidden
 | `collapsed` | Icon rail, no peek; groups open as hover flyouts, items get tooltips    |
 | `hover`     | Icon rail that peeks open on hover (debounced) and overlays the content |
 
-- `⌘/Ctrl + B` (or the navbar trigger) flips `expanded` ⇄ `hover`; `collapsed` is chosen from the rail's user menu → **Sidebar**.
+- `⌘/Ctrl + B` (or the navbar trigger) flips `expanded` ⇄ `hover`; all three are pickable from the rail's bottom **Sidebar** item (`sidebar-settings.tsx`).
+- The account menu lives only in the navbar (`header-user.tsx`) — the rail carries nav plus its own display settings.
+- Rail items have no focus ring; a focused item takes the accent surface instead.
 - Below `lg` the rail is replaced by a Sheet drawer, opened by the navbar trigger.
 - An open dropdown/popover inside the rail locks the peek open via `setPeekLocked` — pass it to `onOpenChange` for anything anchored in the rail.
 - The rail is near-black in light mode via `.rail-surface` (`globals.css`); in dark mode it defers to the app's `--sidebar` tokens.
@@ -196,9 +198,9 @@ DashboardShell            h-svh, flex-col, overflow-hidden
 
 ### Nav, titles, full-bleed pages
 
-- `lib/nav.ts` — `NAV` (categories → items → optional `items` children) is the single source of truth; `getNavTitle(pathname)` feeds the header title.
+- `lib/nav.ts` — `NAV` (categories → items → optional `items` children) is the single source of truth; `getNavTitle(pathname)` feeds the header title. Its **Examples** section (`Menu 1/2/3` → `app/(dashboard)/menu-*/`, `features/placeholder/`) is dummy content — delete it with the first real feature.
 - `useFullBleedPage()` (`layout/full-bleed-context.tsx`) drops the card's padding and inner scroll so a page can own them (tables, iframes).
-- `useIsEmbedded()` hides both account menus when the app runs inside 10MS HQ (`?source=hq` or an iframe) — the host provides its own.
+- `useIsEmbedded()` hides the navbar account menu when the app runs inside 10MS HQ (`?source=hq` or an iframe) — the host provides its own.
 
 ## Adding a new feature
 
