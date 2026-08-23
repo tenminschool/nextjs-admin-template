@@ -6,7 +6,8 @@
  * - three persisted modes (`expanded` / `collapsed` / `hover`) instead of a boolean open state
  * - hover-to-peek (debounced, lockable by anchored popovers) for `hover` mode
  * - `useIsLarge()` (lg breakpoint) to pick between the desktop rail and the mobile Sheet
- * - a rail that hangs below the app header (`top-14`) instead of spanning the viewport
+ * - a rail that hangs below the app header (`--app-header-h`, 0 when embedded in a
+ *   host shell) instead of spanning the viewport
  *
  * Leaf primitives (Button, Input, Sheet, Skeleton, Tooltip, …) come from
  * `@tenminuteschool/design-system`; only the sidebar shell lives here.
@@ -43,7 +44,7 @@ const SIDEBAR_KEYBOARD_SHORTCUT = 'b';
 
 /** Pinned open, pinned closed (icon rail, no peek), or icon rail that expands on hover. */
 type SidebarMode = 'expanded' | 'collapsed' | 'hover';
-const SIDEBAR_DEFAULT_MODE: SidebarMode = 'hover';
+const SIDEBAR_DEFAULT_MODE: SidebarMode = 'expanded';
 
 type SidebarContextProps = {
   state: 'expanded' | 'collapsed';
@@ -106,10 +107,12 @@ function SidebarProvider({
     (value: SidebarMode) => {
       if (setModeProp) {
         setModeProp(value);
-      } else {
-        _setMode(value);
+        // Controlled: the owner decides the mode, so don't overwrite the
+        // browser's standalone preference on its behalf.
+        return;
       }
 
+      _setMode(value);
       window.localStorage.setItem(SIDEBAR_MODE_STORAGE_KEY, value);
     },
     [setModeProp],
@@ -395,7 +398,7 @@ function Sidebar({
         ref={containerRef}
         data-slot="sidebar-container"
         className={cn(
-          'fixed top-14 bottom-0 z-10 hidden h-[calc(100svh-3.5rem)] w-(--sidebar-width) transition-[left,right,width] duration-200 ease-luxe md:flex',
+          'fixed top-(--app-header-h) bottom-0 z-10 hidden h-[calc(100svh-var(--app-header-h))] w-(--sidebar-width) transition-[left,right,width] duration-200 ease-luxe md:flex',
           side === 'left'
             ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
             : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',

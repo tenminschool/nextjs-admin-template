@@ -77,7 +77,6 @@ src/
 │   │   ├── dashboard-shell.tsx         # Header + rail + content card
 │   │   ├── header.tsx                  # Top navbar (logo, env badge, page title, user)
 │   │   ├── header-user.tsx             # Navbar account dropdown
-│   │   ├── dark-rail-theme.ts          # RAIL_SURFACE_CLASS → .rail-surface
 │   │   ├── full-bleed-context.tsx      # useFullBleedPage() — page owns the card
 │   │   └── sidebar/
 │   │       ├── sidebar-primitives.tsx  # shadcn sidebar fork (modes + hover-peek)
@@ -170,16 +169,21 @@ export function useUsers() {
 Ported from **10MS HQ** — top navbar plus a floating left rail, with the page in an inset card.
 
 ```
-DashboardShell            h-svh, flex-col, overflow-hidden
+DashboardShell            h-svh, flex-col, overflow-hidden; sets --app-header-h
 ├── Header                sticky h-14: mobile SidebarTrigger, logo + APP_NAME, page title, HeaderUser
 └── row (flex-1)
-    ├── AppSidebar        floating rail, fixed under the header (top-14)
+    ├── AppSidebar        floating rail, fixed at top-(--app-header-h)
     └── content card      rounded-xl border, scrolls inside itself
 ```
 
+`--app-header-h` is the navbar's height (`3.5rem`, `0px` when embedded). The rail
+is `position: fixed` while the content sits in flow, so both read this one
+variable — hard-coding either offset drifts them apart. Fallback in
+`globals.css`; overridden per-render in `dashboard-shell.tsx`.
+
 ### Sidebar modes
 
-`SidebarProvider` persists one of three modes in `localStorage` (`sidebar_mode`), default `hover`:
+`SidebarProvider` persists one of three modes in `localStorage` (`sidebar_mode`), default `expanded`:
 
 | Mode        | Behavior                                                                |
 | ----------- | ----------------------------------------------------------------------- |
@@ -190,9 +194,11 @@ DashboardShell            h-svh, flex-col, overflow-hidden
 - `⌘/Ctrl + B` (or the navbar trigger) flips `expanded` ⇄ `hover`; all three are pickable from the rail's bottom **Sidebar** item (`sidebar-settings.tsx`).
 - The account menu lives only in the navbar (`header-user.tsx`) — the rail carries nav plus its own display settings.
 - Rail items have no focus ring; a focused item takes the accent surface instead.
-- Below `lg` the rail is replaced by a Sheet drawer, opened by the navbar trigger.
+- Below `lg` the rail is replaced by a Sheet drawer, opened by the navbar trigger — or, when embedded, by a floating trigger in `dashboard-shell.tsx` (the navbar is gone).
 - An open dropdown/popover inside the rail locks the peek open via `setPeekLocked` — pass it to `onOpenChange` for anything anchored in the rail.
-- The rail is near-black in light mode via `.rail-surface` (`globals.css`); in dark mode it defers to the app's `--sidebar` tokens.
+- Passing `mode` makes the provider **controlled**: the stored preference is ignored and no longer written, so a forced mode can't clobber what the user picked standalone.
+- The mode picker marks its selection with a trailing tick, not `DropdownMenuRadioItem` — that reserves a left gutter for a filled dot, which reads as a stray bullet beside each mode's own icon.
+- The rail takes the app's own `--sidebar` tokens — near-white in light mode, dark in dark mode. It is not pinned to one surface.
 
 `sidebar-primitives.tsx` is a **fork** of the shadcn sidebar (modes instead of a boolean `open`, hover-peek, header offset) — edit it directly; do not re-add it via the shadcn CLI. Leaf primitives come from `@tenminuteschool/design-system`.
 
@@ -200,7 +206,27 @@ DashboardShell            h-svh, flex-col, overflow-hidden
 
 - `lib/nav.ts` — `NAV` (categories → items → optional `items` children) is the single source of truth; `getNavTitle(pathname)` feeds the header title. Its **Examples** section (`Menu 1/2/3` → `app/(dashboard)/menu-*/`, `features/placeholder/`) is dummy content — delete it with the first real feature.
 - `useFullBleedPage()` (`layout/full-bleed-context.tsx`) drops the card's padding and inner scroll so a page can own them (tables, iframes).
-- `useIsEmbedded()` hides the navbar account menu when the app runs inside 10MS HQ (`?source=hq` or an iframe) — the host provides its own.
+- `useIsEmbedded()` (`?source=hq` or an iframe) drives the embedded layout — see below.
+
+### Embedded in 10MS HQ
+
+`useIsEmbedded()` is true when the URL carries `?source=hq` or the app is in an
+iframe. HQ already draws a navbar and a primary rail, so the shell steps down to
+avoid competing with it:
+
+| | Standalone | Embedded |
+| --- | --- | --- |
+| `Header` | rendered | **not rendered** — HQ owns the navbar |
+| `--app-header-h` | `3.5rem` | `0px` — rail runs flush to the top |
+| Rail `variant` | `floating` (rounded card, shadow) | `sidebar` — flat, bordered, secondary |
+| Rail heading | — | `APP_NAME` (the navbar that showed it is gone) |
+| Rail mode | user's stored preference | pinned `expanded`, picker hidden |
+| Mobile drawer trigger | in the navbar | floating, `lg:hidden` |
+| Content inset | from the navbar above it | `pt-2` on `<main>` |
+
+The iframe check has no server-side equivalent, so `useIsEmbedded()` reads
+`false` through hydration and syncs after mount — via `useSyncExternalStore`, not
+a bare `window` read during render, which would mismatch.
 
 ## Adding a new feature
 

@@ -1,13 +1,17 @@
 'use client';
 
-import { PanelLeftClose, PanelLeftDashed, PanelLeftOpen } from 'lucide-react';
+import {
+  Check,
+  PanelLeftClose,
+  PanelLeftDashed,
+  PanelLeftOpen,
+} from 'lucide-react';
 
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@tenminuteschool/design-system';
 import {
@@ -68,17 +72,23 @@ export function SidebarSettings() {
             <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
               Sidebar
             </DropdownMenuLabel>
-            <DropdownMenuRadioGroup
-              value={mode}
-              onValueChange={(value) => setMode(value as SidebarMode)}
-            >
-              {SIDEBAR_MODE_OPTIONS.map(({ value, label, icon: Icon }) => (
-                <DropdownMenuRadioItem key={value} value={value}>
-                  <Icon />
-                  {label}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
+            {/* Plain items, not DropdownMenuRadioItem — that reserves a left
+                gutter for a filled dot, which reads as a stray bullet next to
+                each mode's own icon. A trailing tick marks the choice instead. */}
+            {SIDEBAR_MODE_OPTIONS.map(({ value, label, icon: Icon }) => (
+              <DropdownMenuItem
+                key={value}
+                onSelect={() => setMode(value)}
+                aria-checked={mode === value}
+                role="menuitemradio"
+              >
+                <Icon />
+                {label}
+                {mode === value && (
+                  <Check className="ml-auto size-4 shrink-0" />
+                )}
+              </DropdownMenuItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

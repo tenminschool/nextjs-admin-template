@@ -35,11 +35,16 @@ pnpm dev
 
 ## Layout
 
-Top navbar + a floating left rail (three modes: pinned open, icon-only, or peek-on-hover — persisted per browser; `⌘/Ctrl + B` toggles). Below `lg` the rail becomes a drawer. See `CLAUDE.md` → "Layout shell".
+Top navbar + a floating left rail (three modes: pinned open, icon-only, or peek-on-hover — persisted per browser, default pinned open; `⌘/Ctrl + B` toggles). Below `lg` the rail becomes a drawer. See `CLAUDE.md` → "Layout shell".
 
 ## Embedding
 
-The navbar account menu auto-hides when the app is loaded inside an iframe, or when the URL has `?source=hq` — the host shell supplies its own.
+Inside 10MS HQ — an iframe, or `?source=hq` on the URL — the app drops the chrome the host already provides:
+
+- the **navbar is not rendered** at all (HQ draws its own, with the account menu)
+- the left rail becomes a **flat secondary nav**: flush to the top edge, pinned open, headed by `NEXT_PUBLIC_APP_NAME`, with no mode picker
+
+Standalone, everything renders as normal — it is the same build either way, with no flag to set. See `CLAUDE.md` → "Embedded in 10MS HQ".
 
 ## Adding features
 

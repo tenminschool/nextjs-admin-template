@@ -66,6 +66,10 @@
 }
 
 :root {
+  /* Navbar height. DashboardShell overrides it to 0 when embedded in a host
+     shell; the fixed sidebar hangs off it either way. */
+  --app-header-h: 3.5rem;
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -140,29 +144,6 @@
   --shadow-color-soft: oklch(0 0 0 / 0.22);
   --shadow-color-mid: oklch(0 0 0 / 0.35);
   --shadow-color-deep: oklch(0 0 0 / 0.5);
-}
-
-/* Left nav rail: forces a near-black surface in light mode; in dark mode it
-   defers to the app's own dark --sidebar tokens instead of staying pinned. */
-.rail-surface {
-  --sidebar: #030712;
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-accent: rgba(255, 255, 255, 0.1);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-primary: oklch(0.985 0 0);
-  --sidebar-primary-foreground: oklch(0.205 0 0);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-.dark .rail-surface {
-  --sidebar: inherit;
-  --sidebar-foreground: inherit;
-  --sidebar-accent: inherit;
-  --sidebar-accent-foreground: inherit;
-  --sidebar-border: inherit;
-  --sidebar-primary: inherit;
-  --sidebar-primary-foreground: inherit;
-  --sidebar-ring: inherit;
 }
 
 @layer base {
