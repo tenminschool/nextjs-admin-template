@@ -2,6 +2,12 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+/* The package ships prebuilt CSS, but it lands in the low-priority `ds` layer, so
+   any utility our own Tailwind also emits outranks it — the sidebar's `hidden`
+   beat its own `md:flex` and the rail never appeared. Scanning the package's dist
+   re-emits those classes into our utilities layer, where media order decides. */
+@source '../../node_modules/@tenminuteschool/design-system/dist';
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -66,9 +72,9 @@
 }
 
 :root {
-  /* Navbar height. DashboardShell overrides it to 0 when embedded in a host
-     shell; the fixed sidebar hangs off it either way. */
-  --app-header-h: 3.5rem;
+  /* Navbar height, read by the design system's Sidebar to hang below it.
+     DashboardShell overrides it to 0 when embedded in a host shell. */
+  --sidebar-offset-top: 3.5rem;
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);

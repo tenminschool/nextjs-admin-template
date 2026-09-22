@@ -13,14 +13,12 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@tenminuteschool/design-system';
-import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
   type SidebarMode,
-} from '@/components/layout/sidebar/sidebar-primitives';
+  useSidebar,
+} from '@tenminuteschool/design-system';
 
 const SIDEBAR_MODE_OPTIONS: {
   value: SidebarMode;

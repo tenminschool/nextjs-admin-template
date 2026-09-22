@@ -1,3 +1,5 @@
 allowBuilds:
   sharp: true
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - '@tenminuteschool/design-system@0.3.0'

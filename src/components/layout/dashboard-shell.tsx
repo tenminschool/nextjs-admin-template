@@ -6,7 +6,7 @@ import { AppSidebar } from '@/components/layout/sidebar/app-sidebar';
 import {
   SidebarProvider,
   SidebarTrigger,
-} from '@/components/layout/sidebar/sidebar-primitives';
+} from '@tenminuteschool/design-system';
 import { useIsEmbedded } from '@/hooks/use-embedded';
 import { FullBleedContext } from './full-bleed-context';
 import { Header } from './header';
@@ -31,7 +31,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       onModeChange={isEmbedded ? () => {} : undefined}
       style={
         {
-          '--app-header-h': isEmbedded ? '0px' : HEADER_HEIGHT,
+          '--sidebar-offset-top': isEmbedded ? '0px' : HEADER_HEIGHT,
         } as React.CSSProperties
       }
     >

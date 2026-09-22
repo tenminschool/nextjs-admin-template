@@ -13,8 +13,6 @@ import {
   Popover,
   PopoverAnchor,
   PopoverContent,
-} from '@tenminuteschool/design-system';
-import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
@@ -24,7 +22,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from '@/components/layout/sidebar/sidebar-primitives';
+} from '@tenminuteschool/design-system';
 import { cn } from '@/lib/utils';
 
 const FLYOUT_OPEN_DELAY = 100;

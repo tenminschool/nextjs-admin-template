@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { getNavTitle } from '@/lib/nav';
 import { Logo } from '@/components/logo';
 import { HeaderUser } from '@/components/layout/header-user';
-import { SidebarTrigger } from '@/components/layout/sidebar/sidebar-primitives';
+import { SidebarTrigger } from '@tenminuteschool/design-system';
 import { useIsEmbedded } from '@/hooks/use-embedded';
 import { APP_NAME } from '@/constants';
 

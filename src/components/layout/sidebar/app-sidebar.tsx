@@ -8,8 +8,9 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarRail,
   useSidebar,
-} from '@/components/layout/sidebar/sidebar-primitives';
+} from '@tenminuteschool/design-system';
 import { useIsEmbedded } from '@/hooks/use-embedded';
 import { APP_NAME } from '@/constants';
 import { cn } from '@/lib/utils';
@@ -20,7 +21,7 @@ import { cn } from '@/lib/utils';
 // The account menu lives in the navbar (`layout/header-user.tsx`); the rail
 // footer only carries its own display settings.
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { isLarge, setOpenMobile } = useSidebar();
+  const { isLarge, mode, setOpenMobile } = useSidebar();
   const isEmbedded = useIsEmbedded();
 
   return (
@@ -62,6 +63,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarFooter className="gap-0 p-2 pt-0">
           <SidebarSettings />
         </SidebarFooter>
+      )}
+
+      {/* Drag-strip on the sidebar's edge: the desktop expand/collapse affordance,
+          since both SidebarTriggers are mobile-only. Omitted when embedded (the
+          mode is controlled and pinned open) and in hover mode, where toggling is
+          a no-op — the rail would still light up on hover and then do nothing. */}
+      {!isEmbedded && mode !== 'hover' && (
+        // The rail paints a 2px line on hover to advertise itself; between the
+        // sidebar's own border and the content card's, it reads as a third stray
+        // rule. The 16px hit area and the cursor are affordance enough.
+        <SidebarRail className="hover:after:bg-transparent" />
       )}
     </Sidebar>
   );
